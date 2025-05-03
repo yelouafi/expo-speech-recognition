@@ -37,8 +37,8 @@ actor ExpoSpeechRecognizer: ObservableObject {
   private var stoppedListening = false
   /// Whether the audio input is muted
   private var isMuted = false
-  /// Original voice processing state (before muting)
-  private var wasVoiceProcessingEnabled = true
+  /// Original volume of the input node (before muting)
+  private var originalVolume: Float = 1.0
 
   /// Detection timer, for non-continuous speech recognition
   @MainActor var detectionTimer: Timer?
@@ -869,11 +869,11 @@ actor ExpoSpeechRecognizer: ObservableObject {
         return
       }
       
-      // Store original voice processing state
-      wasVoiceProcessingEnabled = audioEngine.inputNode.isVoiceProcessingEnabled
+      // Store original volume
+      originalVolume = audioEngine.inputNode.volume
       
-      // Disable voice processing to mute
-      try? audioEngine.inputNode.setVoiceProcessingEnabled(false)
+      // Set volume to 0.0 to mute
+      audioEngine.inputNode.volume = 0.0
       isMuted = true
     }
   }
@@ -891,8 +891,8 @@ actor ExpoSpeechRecognizer: ObservableObject {
         return
       }
       
-      // Restore original voice processing state
-      try? audioEngine.inputNode.setVoiceProcessingEnabled(wasVoiceProcessingEnabled)
+      // Restore original volume
+      audioEngine.inputNode.volume = originalVolume
       isMuted = false
     }
   }
