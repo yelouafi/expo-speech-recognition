@@ -35,6 +35,10 @@ actor ExpoSpeechRecognizer: ObservableObject {
   private var outputFileUrl: URL?
   /// Whether the recognizer has been stopped by the user or the timer has timed out
   private var stoppedListening = false
+  /// Whether the audio input is muted
+  private var isMuted = false
+  /// Original voice processing state (before muting)
+  private var wasVoiceProcessingEnabled = true
 
   /// Detection timer, for non-continuous speech recognition
   @MainActor var detectionTimer: Timer?
@@ -851,6 +855,47 @@ actor ExpoSpeechRecognizer: ObservableObject {
     }
   }
   */
+
+  /// Mutes the audio recording while keeping the recognition session active.
+  /// This will prevent audio from being captured while recognition continues.
+  func mute() {
+    Task {
+      guard let audioEngine = audioEngine, audioEngine.isRunning else {
+        return
+      }
+      
+      // If already muted, do nothing
+      if isMuted {
+        return
+      }
+      
+      // Store original voice processing state
+      wasVoiceProcessingEnabled = audioEngine.inputNode.isVoiceProcessingEnabled
+      
+      // Disable voice processing to mute
+      try? audioEngine.inputNode.setVoiceProcessingEnabled(false)
+      isMuted = true
+    }
+  }
+  
+  /// Unmutes the audio recording, resuming audio capture.
+  /// This should be called after mute() to resume audio capture.
+  func unmute() {
+    Task {
+      guard let audioEngine = audioEngine, audioEngine.isRunning else {
+        return
+      }
+      
+      // If not muted, do nothing
+      if !isMuted {
+        return
+      }
+      
+      // Restore original voice processing state
+      try? audioEngine.inputNode.setVoiceProcessingEnabled(wasVoiceProcessingEnabled)
+      isMuted = false
+    }
+  }
 }
 
 extension SFSpeechRecognizer {

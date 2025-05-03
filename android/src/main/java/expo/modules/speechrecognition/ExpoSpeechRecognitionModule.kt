@@ -343,6 +343,14 @@ class ExpoSpeechRecognitionModule : Module() {
                     )
                 }
             }
+
+            Function("mute") {
+                expoSpeechService.mute()
+            }
+
+            Function("unmute") {
+                expoSpeechService.unmute()
+            }
         }
 
     private fun hasNotGrantedRecordPermissions(): Boolean = appContext.permissions?.hasGrantedPermissions(RECORD_AUDIO)?.not() ?: false

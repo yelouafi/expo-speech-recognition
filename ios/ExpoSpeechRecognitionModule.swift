@@ -407,6 +407,18 @@ public class ExpoSpeechRecognitionModule: Module {
         "packageName": ""
       ]
     }
+
+    Function("mute") {
+      Task {
+        await speechRecognizer?.mute()
+      }
+    }
+
+    Function("unmute") {
+      Task {
+        await speechRecognizer?.unmute()
+      }
+    }
   }
 
   /** Normalizes the locale for compatibility between Android and iOS */

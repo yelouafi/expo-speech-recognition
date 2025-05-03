@@ -9,6 +9,10 @@ export const ExpoSpeechRecognitionModule =
 
 const stop = ExpoSpeechRecognitionModule.stop;
 const abort = ExpoSpeechRecognitionModule.abort;
+const mute = ExpoSpeechRecognitionModule.mute;
+const unmute = ExpoSpeechRecognitionModule.unmute;
 
 ExpoSpeechRecognitionModule.abort = () => abort();
 ExpoSpeechRecognitionModule.stop = () => stop();
+ExpoSpeechRecognitionModule.mute = () => mute();
+ExpoSpeechRecognitionModule.unmute = () => unmute();

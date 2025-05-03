@@ -725,6 +725,18 @@ export declare class ExpoSpeechRecognitionModuleType extends NativeModule<ExpoSp
    * Returns the current state of the speech recognizer.
    */
   getStateAsync(): Promise<SpeechRecognitionState>;
+
+  /**
+   * Mutes the audio recording while keeping the recognition session active.
+   * This will prevent audio from being captured while recognition continues.
+   */
+  mute(): void;
+
+  /**
+   * Unmutes the audio recording, resuming audio capture.
+   * This should be called after mute() to resume audio capture.
+   */
+  unmute(): void;
 }
 
 export type SetCategoryOptions = {

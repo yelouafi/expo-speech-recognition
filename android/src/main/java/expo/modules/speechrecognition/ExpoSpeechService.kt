@@ -729,4 +729,24 @@ class ExpoSpeechService(
 
         return SpeechRecognitionErrorEvent(error, message)
     }
+
+    /**
+     * Mutes the audio recording while keeping the recognition session active.
+     * This will prevent audio from being captured while recognition continues.
+     */
+    fun mute() {
+        mainHandler.post {
+            audioRecorder?.mute()
+        }
+    }
+
+    /**
+     * Unmutes the audio recording, resuming audio capture.
+     * This should be called after mute() to resume audio capture.
+     */
+    fun unmute() {
+        mainHandler.post {
+            audioRecorder?.unmute()
+        }
+    }
 }

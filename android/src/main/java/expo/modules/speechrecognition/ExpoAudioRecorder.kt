@@ -61,6 +61,7 @@ class ExpoAudioRecorder(
 
     private var recordingThread: Thread? = null
     private var isRecordingAudio = false
+    private var isMuted = false
 
     companion object {
         private const val TAG = "ExpoAudioRecorder"
@@ -192,26 +193,44 @@ class ExpoAudioRecorder(
         }
     }
 
+    /**
+     * Mutes the audio recording by temporarily stopping the recording stream from being processed
+     * without stopping the actual recognition process.
+     */
+    fun mute() {
+        isMuted = true
+    }
+
+    /**
+     * Unmutes the audio recording, resuming the processing of the audio stream.
+     */
+    fun unmute() {
+        isMuted = false
+    }
+
     private fun streamAudioToPipe() {
         val tempFileOutputStream = FileOutputStream(tempPcmFile)
         val data = ByteArray(bufferSizeInBytes / 2)
+        val mutedData = ByteArray(bufferSizeInBytes / 2) // Zero-filled buffer for muted audio
 
         while (isRecordingAudio) {
             val read = audioRecorder!!.read(data, 0, data.size)
-            try {
-                outputStream?.write(data, 0, read)
-                outputStream?.flush()
-
-                // Write to the temp PCM file
-                if (outputFilePath != null) {
-                    tempFileOutputStream.write(data, 0, read)
-                    tempFileOutputStream.flush()
+            if (read > 0) {
+                // Write to temp file for WAV conversion later
+                tempFileOutputStream.write(data, 0, read)
+                
+                // Only write actual audio data to the recognition pipe if not muted
+                if (!isMuted) {
+                    outputStream?.write(data, 0, read)
+                } else {
+                    // When muted, we still need to write something to maintain the stream timing
+                    // but we write silence (zero-filled buffer)
+                    outputStream?.write(mutedData, 0, read)
                 }
-            } catch (e: IOException) {
-                Log.e(TAG, "Failed to write to output stream", e)
-                e.printStackTrace()
             }
         }
+        
+        // Close the temp file
         tempFileOutputStream.close()
     }
 }

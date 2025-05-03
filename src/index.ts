@@ -59,6 +59,10 @@ export const getAssistantService =
 export const addSpeechRecognitionListener =
   ExpoSpeechRecognitionModule.addListener;
 
+export const mute = ExpoSpeechRecognitionModule.mute;
+
+export const unmute = ExpoSpeechRecognitionModule.unmute;
+
 export type {
   ExpoSpeechRecognitionOptions,
   AndroidIntentOptions,
