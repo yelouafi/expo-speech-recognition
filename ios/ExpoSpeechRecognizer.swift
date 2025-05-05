@@ -36,9 +36,8 @@ actor ExpoSpeechRecognizer: ObservableObject {
   /// Whether the recognizer has been stopped by the user or the timer has timed out
   private var stoppedListening = false
   /// Whether the audio input is muted
-  private var isMuted = false
-  /// Original volume of the input node (before muting)
-  private var originalVolume: Float = 1.0
+  private static var isMuted = false
+  
 
   /// Detection timer, for non-continuous speech recognition
   @MainActor var detectionTimer: Timer?
@@ -601,6 +600,11 @@ actor ExpoSpeechRecognizer: ObservableObject {
       format: audioFormat
     ) {
       (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
+
+      if Self.isMuted {
+        return
+      }
+
       audioBufferRequest.append(buffer)
 
       // Feature: Record to a file
@@ -635,6 +639,9 @@ actor ExpoSpeechRecognizer: ObservableObject {
         bufferSize: bufferSize,
         format: audioFormat
       ) { buffer, when in
+        if Self.isMuted {
+          return
+        }
         guard let power = Self.calculatePower(buffer: buffer) else { return }
 
         let minDb: Float = -60.0
@@ -859,42 +866,13 @@ actor ExpoSpeechRecognizer: ObservableObject {
   /// Mutes the audio recording while keeping the recognition session active.
   /// This will prevent audio from being captured while recognition continues.
   func mute() {
-    Task {
-      guard let audioEngine = audioEngine, audioEngine.isRunning else {
-        return
-      }
-      
-      // If already muted, do nothing
-      if isMuted {
-        return
-      }
-      
-      // Store original volume
-      originalVolume = audioEngine.inputNode.volume
-      
-      // Set volume to 0.0 to mute
-      audioEngine.inputNode.volume = 0.0
-      isMuted = true
-    }
+    Self.isMuted = true
   }
   
   /// Unmutes the audio recording, resuming audio capture.
   /// This should be called after mute() to resume audio capture.
   func unmute() {
-    Task {
-      guard let audioEngine = audioEngine, audioEngine.isRunning else {
-        return
-      }
-      
-      // If not muted, do nothing
-      if !isMuted {
-        return
-      }
-      
-      // Restore original volume
-      audioEngine.inputNode.volume = originalVolume
-      isMuted = false
-    }
+    Self.isMuted = false
   }
 }
 
