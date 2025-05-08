@@ -222,6 +222,10 @@ export type ExpoSpeechRecognitionOptions = {
    */
   recordingOptions?: RecordingOptions;
   /**
+   * Mic options to pass to the recognizer.
+   */
+  micOptions?: MicOptions;
+  /**
    * Default: `"android.speech.action.RECOGNIZE_SPEECH"`
    *
    * The kind of intent action
@@ -319,6 +323,15 @@ export type RecordingOptions = {
     | "pcmFormatFloat64"
     | "pcmFormatInt16"
     | "pcmFormatInt32";
+};
+
+export type MicOptions = {
+  /**
+   * Whether to enable voice processing.
+   *
+   * Default: false
+   */
+  voiceProcessing?: boolean;
 };
 
 export type AudioSourceOptions = {

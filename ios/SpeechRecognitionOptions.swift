@@ -97,6 +97,11 @@ struct AudioSourceOptions: Record {
   var chunkDelayMillis: Int? = nil
 }
 
+struct MicOptions: Record {
+  @Field
+  var voiceProcessing: Bool = false
+}
+
 struct GetSupportedLocaleOptions: Record {
   @Field
   var androidRecognitionServicePackage: String? = nil

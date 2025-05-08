@@ -37,7 +37,6 @@ actor ExpoSpeechRecognizer: ObservableObject {
   private var stoppedListening = false
   /// Whether the audio input is muted
   private static var isMuted = false
-  
 
   /// Detection timer, for non-continuous speech recognition
   @MainActor var detectionTimer: Timer?
@@ -348,6 +347,11 @@ actor ExpoSpeechRecognizer: ObservableObject {
     let mixerNode = AVAudioMixerNode()
     audioEngine.attach(mixerNode)
     audioEngine.connect(inputNode, to: mixerNode, format: audioFormat)
+
+    if options.micOptions?.voiceProcessing == true {
+      try audioEngine.inputNode.setVoiceProcessingEnabled(true)
+      try audioEngine.outputNode.setVoiceProcessingEnabled(true)
+    }
 
     if options.recordingOptions?.persist == true {
       guard let fileAudioFormat = Self.getFileAudioFormat(options: options, engine: audioEngine)
@@ -840,20 +844,20 @@ actor ExpoSpeechRecognizer: ObservableObject {
   /// For testing purposes only
   func playBack(playbackBuffers: [AVAudioPCMBuffer]) {
     guard !playbackBuffers.isEmpty else { return }
-
+  
     playbackEngine = AVAudioEngine()
     playerNode = AVAudioPlayerNode()
-
+  
     guard let playbackEngine = playbackEngine, let playerNode = playerNode else { return }
-
+  
     playbackEngine.attach(playerNode)
     let outputFormat = playbackBuffers[0].format
     playbackEngine.connect(playerNode, to: playbackEngine.mainMixerNode, format: outputFormat)
-
+  
     for buffer in playbackBuffers {
       playerNode.scheduleBuffer(buffer, completionHandler: nil)
     }
-
+  
     do {
       try playbackEngine.start()
       playerNode.play()
@@ -868,7 +872,7 @@ actor ExpoSpeechRecognizer: ObservableObject {
   func mute() {
     Self.isMuted = true
   }
-  
+
   /// Unmutes the audio recording, resuming audio capture.
   /// This should be called after mute() to resume audio capture.
   func unmute() {
