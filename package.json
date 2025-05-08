@@ -19,6 +19,7 @@
     "open:android": "open -a \"Android Studio\" example/android",
     "changeset": "changeset",
     "release": "npm run prepare && changeset publish",
+    "publish:patch": "npm run prepare && npm version patch && npm publish && git push --follow-tags",
     "ts:check": "tsc -p . --noEmit"
   },
   "keywords": [
