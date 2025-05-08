@@ -27,6 +27,9 @@ struct SpeechRecognitionOptions: Record {
   var recordingOptions: RecordingOptions? = nil
 
   @Field
+  var micOptions: MicOptions? = nil
+
+  @Field
   var audioSource: AudioSourceOptions? = nil
 
   @Field
