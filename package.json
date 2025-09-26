@@ -1,6 +1,6 @@
 {
   "name": "ye-expo-speech-recognition",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Speech Recognition for React Native Expo projects",
   "main": "build/index.js",
   "types": "build/index.d.ts",
