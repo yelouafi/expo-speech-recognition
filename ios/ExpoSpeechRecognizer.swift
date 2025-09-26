@@ -559,6 +559,12 @@ actor ExpoSpeechRecognizer: ObservableObject {
     }
 
     try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+
+    if #available(iOS 13, *) {
+      do {
+        try AVAudioSession.sharedInstance().setAllowHapticsAndSystemSoundsDuringRecording(true)
+      } catch {}
+    }
   }
 
   private static func audioInputIsBusy(_ recordingFormat: AVAudioFormat) -> Bool {
